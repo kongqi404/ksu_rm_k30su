@@ -1,0 +1,47 @@
+name: build
+
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs: 
+    build:
+        runs-on: ubuntu-latest
+        steps:
+        - name: checkout
+          uses: actions/checkout@v4
+        - run: sudo apt update
+        - run: sudo apt upgrade
+        - run:  sudo apt install  openssh-server screen git openjdk-8-jdk android-tools-adb bc bison build-essential curl flex g++-multilib gcc-multilib gnupg gperf imagemagick lib32ncurses-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc yasm zip zlib1g-dev libtinfo5 libncurses5 p7zip
+        - name: get zycclang version
+          id: get-version
+          run: echo "CLANG=$(curl https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-link.txt -s)" >> $GITHUB_OUTPUT
+        - name: cache clang
+          id: cache_clang
+          uses: actions/cache@v4
+          with: 
+            path: ./clang
+            key: ${{ steps.get-version.outputs.CLANG}}
+        - name: get zycclang
+          if: steps.cache_clang.outputs.cache-hit != 'true'
+          run: |
+            wget -P ./clang ${{ steps.get-version.outputs.CLANG}}
+            tar -xzvf ./clang/*.gz -C ./clang
+        - name: get realking kernel
+          run: git clone https://github.com/Rohail33/Realking_kernel_sm8250
+        - name: build
+          run: |
+            mv build_kernel.sh ./Realking_kernel_sm8250/
+            cd ./Realking_kernel_sm8250
+            ./build_kernel.sh 
+        - name: upload artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: kernel
+            path: ./*.zip
