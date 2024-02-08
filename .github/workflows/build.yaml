@@ -17,7 +17,7 @@ jobs:
         - name: checkout
           uses: actions/checkout@v4
         - run: sudo apt update
-        - run:  sudo apt install  openssh-server screen git openjdk-8-jdk android-tools-adb bc bison build-essential curl flex g++-multilib gcc-multilib gnupg gperf imagemagick lib32ncurses-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc yasm zip zlib1g-dev libtinfo5 libncurses5 p7zip
+        - run:  sudo apt install  openssh-server screen git openjdk-8-jdk android-tools-adb bc bison build-essential curl flex g++-multilib gcc-multilib gnupg gperf imagemagick lib32ncurses-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc yasm zip zlib1g-dev libtinfo5 libncurses5 p7zip jq
         - name: get zycclang version
           id: get-version
           run: echo "CLANG=$(curl https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-link.txt -s)" >> $GITHUB_OUTPUT
@@ -32,8 +32,20 @@ jobs:
           run: |
             wget -P ./clang ${{ steps.get-version.outputs.CLANG}}
             tar -xzvf ./clang/*.gz -C ./clang
-        - name: get realking kernel
-          run: git clone https://github.com/Rohail33/Realking_kernel_sm8250
+        - name: get realking kernel latest commit
+          id: get-latest
+          run: echo "KERNEL=$(curl https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-link.txt -s | jq '.[0] | .sha')" >> $GITHUB_OUTPUT
+        - name: cache kernel
+          id: cache_kernel
+          uses: actions/cache@v4
+          with:
+            path: ./Realking_kernel_sm8250
+            key: ${{steps.get-latest.outputs.KERNEL}}
+        - name: get kernel
+          if: steps.cache_kernel.outputs.cache-hit != 'true'
+          run: |
+            wget -P ./Realking_kernel_sm8250 https://github.com/Rohail33/Realking_kernel_sm8250/archive/refs/heads/main.tar.gz
+            tar -xzvf ./Realking_kernel_sm8250/*.gz -C ./Realking_kernel_sm8250
         - name: build
           run: |
             rm ./Realking_kernel_sm8250/build_kernel.sh
@@ -45,4 +57,4 @@ jobs:
           uses: actions/upload-artifact@v4
           with:
             name: kernel
-            path: ./*.zip
+            path: ./Realking_kernel_sm8250/*.zip
