@@ -34,7 +34,7 @@ jobs:
             tar -xzvf ./clang/*.gz -C ./clang
         - name: get realking kernel latest commit
           id: get-latest
-          run: echo "KERNEL=$(curl https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-link.txt -s | jq '.[0] | .sha')" >> $GITHUB_OUTPUT
+          run: echo "KERNEL=$(curl https://api.github.com/repos/Rohail33/Realking_kernel_sm8250/commits -s | jq '.[0] | .sha')" >> $GITHUB_OUTPUT
         - name: cache kernel
           id: cache_kernel
           uses: actions/cache@v4
