@@ -37,6 +37,7 @@ jobs:
           run: git clone https://github.com/Rohail33/Realking_kernel_sm8250
         - name: build
           run: |
+            sudo chmod -X build_kernel.sh
             mv build_kernel.sh ./Realking_kernel_sm8250/
             cd ./Realking_kernel_sm8250
             ./build_kernel.sh 
