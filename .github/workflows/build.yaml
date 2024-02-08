@@ -44,8 +44,7 @@ jobs:
         - name: get kernel
           if: steps.cache_kernel.outputs.cache-hit != 'true'
           run: |
-            wget -P ./Realking_kernel_sm8250 https://github.com/Rohail33/Realking_kernel_sm8250/archive/refs/heads/main.tar.gz
-            tar -xzvf ./Realking_kernel_sm8250/*.gz -C ./Realking_kernel_sm8250
+            git clone https://github.com/Rohail33/Realking_kernel_sm8250.git
         - name: build
           run: |
             rm ./Realking_kernel_sm8250/build_kernel.sh
