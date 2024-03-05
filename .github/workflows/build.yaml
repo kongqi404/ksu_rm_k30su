@@ -21,14 +21,14 @@ jobs:
         - name: get zycclang version
           id: get-version
           run: echo "CLANG=$(curl https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-link.txt -s)" >> $GITHUB_OUTPUT
-        - name: cache clang
-          id: cache_clang
-          uses: actions/cache@v4
-          with: 
-            path: ./clang
-            key: ${{ steps.get-version.outputs.CLANG}}
+        # - name: cache clang
+        #   id: cache_clang
+        #   uses: actions/cache@v4
+        #   with: 
+        #     path: ./clang
+        #     key: ${{ steps.get-version.outputs.CLANG}}
         - name: get zycclang
-          if: steps.cache_clang.outputs.cache-hit != 'true'
+          # if: steps.cache_clang.outputs.cache-hit != 'true'
           run: |
             wget -P ./clang ${{ steps.get-version.outputs.CLANG}}
             tar -xzvf ./clang/*.gz -C ./clang
